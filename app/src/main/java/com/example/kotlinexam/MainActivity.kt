@@ -1,5 +1,7 @@
 package com.example.kotlinexam
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kotlinexam.databinding.ItemPersonBinding
+import com.example.kotlinexam.databinding.ItemSubjectBinding
+import com.example.kotlinexam.item01.Item01Activity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.debug
@@ -18,48 +22,56 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val adapter = PersonAdapter { person ->
-            toast(person.toString())
+        val adapter = SubjectAdapter { subject ->
+            var intent = Intent(this, subject.clazz)
+            startActivity(intent)
         }
         recycler_view.adapter = adapter
 
-        val people = arrayListOf<Person>()
-        for (i in 0..10) {
-            people.add(Person("사람 $i", 20))
-        }
-        adapter.items = people
+//        val people = arrayListOf<Person>()
+//        for (i in 0..10) {
+//            people.add(Person("사람 $i", 20))
+//        }
+        
+        val subjects = arrayListOf<Subject>()
+        subjects.add(Subject("프래그먼트에서 액티비티에 값 전달", Item01Activity::class.java))
+
+        adapter.items = subjects
         adapter.notifyDataSetChanged()
     }
 }
 
-//모델
-data class Person(var name: String, var age: Int)
+//
+data class Subject(val title: String, val clazz: Class<Item01Activity>)
 
 //Adapter
-class PersonAdapter(val callback: (person: Person)-> Unit) : RecyclerView.Adapter<PersonAdapter.PersonViewHolder>() {
-    var items = arrayListOf<Person>()
+class SubjectAdapter(val clickListener: (person: Subject)-> Unit) : RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder>() {
+
+    var items = arrayListOf<Subject>()
 
     //ViewHolder
-    class PersonViewHolder(var binding: ItemPersonBinding)
+    class SubjectViewHolder(var binding: ItemSubjectBinding)
         : RecyclerView.ViewHolder(binding.root) {
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubjectViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_person, parent, false)
+            .inflate(R.layout.item_subject, parent, false)
 
-        val holder =PersonViewHolder(ItemPersonBinding.bind(view))
+        val holder =SubjectViewHolder(ItemSubjectBinding.bind(view))
         view.setOnClickListener {
-            callback.invoke(items[holder.adapterPosition])
+            clickListener.invoke(items[holder.adapterPosition])
         }
         return  holder
     }
 
-    override fun onBindViewHolder(holder: PersonViewHolder, position: Int) {
-        holder.binding.person = items[position]
+    override fun onBindViewHolder(holder: SubjectViewHolder, position: Int) {
+        holder.binding.subject = items[position]
     }
 
     override fun getItemCount(): Int {
         return items.size;
     }
 }
+
+
