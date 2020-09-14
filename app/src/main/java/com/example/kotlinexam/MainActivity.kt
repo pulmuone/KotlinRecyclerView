@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 }
 
 //
-data class Subject(val title: String, val clazz: Class<Item01Activity>)
+data class Subject(val title: String, val clazz: Class<out Activity>)
 
 //Adapter
 class SubjectAdapter(val clickListener: (person: Subject)-> Unit) : RecyclerView.Adapter<SubjectAdapter.SubjectViewHolder>() {
